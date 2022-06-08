@@ -14,7 +14,7 @@ const EventItem = (props) => {
   });
 
   const formattedAddress = location.replace(", ", "\n");
-  const exploreLink = `/event/${id}`;
+  const exploreLink = `/events/${id}`;
 
   return (
     <li className={styles.item}>
@@ -27,7 +27,7 @@ const EventItem = (props) => {
             <time>{formattedDate}</time>
           </div>
           <div className={styles.address}>
-          <AddressIcon />
+            <AddressIcon />
             <address>{formattedAddress}</address>
           </div>
         </div>
