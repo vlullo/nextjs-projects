@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 import { getFilteredEvents } from "../../services/dummy-events-data";
 import EventList from "../../components/events/event-list";
@@ -10,9 +11,20 @@ const FilteredEvents = () => {
   const router = useRouter();
 
   const filterData = router.query.slug;
+  let pageHead = (
+    <Head>
+      <title>Filtered events</title>
+      <meta name="description" content="A list of filtered events..." />
+    </Head>
+  );
 
   if (!filterData) {
-    return <p className="center">Loading...</p>;
+    return (
+      <>
+        {pageHead}
+        <p className="center">Loading...</p>
+      </>
+    );
   }
 
   const filteredYear = filterData[0];
@@ -20,6 +32,16 @@ const FilteredEvents = () => {
 
   const numYear = +filteredYear;
   const numMonth = +filteredMonth;
+
+  pageHead = (
+    <Head>
+      <title>Filtered events</title>
+      <meta
+        name="description"
+        description={`All events for ${numMonth}/${numYear}`}
+      />
+    </Head>
+  );
 
   if (
     isNaN(numYear) ||
@@ -63,6 +85,7 @@ const FilteredEvents = () => {
 
   return (
     <>
+      {pageHead}
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </>
