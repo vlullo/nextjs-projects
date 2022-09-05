@@ -1,23 +1,18 @@
-import { useRouter } from "next/router";
 import Head from "next/head";
 
-import { getEventById } from "../../services/dummy-events-data";
+import { getEventById, getFeaturedEvents } from "../../services/api-utils";
 import EventSummary from "../../components/events/event-detail/event-summary";
 import EventLogistics from "../../components/events/event-detail/event-logistics";
 import EventContent from "../../components/events/event-detail/event-content";
-import ErrorAlert from "../../components/ui/error-alert";
 
-const EventDetails = () => {
-  const router = useRouter();
-
-  const eventId = router.query.eventid;
-  const event = getEventById(eventId);
+const EventDetails = (props) => {
+  const event = props.selectedEvent;
 
   if (!event) {
     return (
-      <ErrorAlert>
-        <p>No event found!</p>
-      </ErrorAlert>
+      <div className="center">
+        <p>Loading...</p>
+      </div>
     );
   }
 
@@ -44,5 +39,30 @@ const EventDetails = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  const eventId = context.params.eventId;
+
+  const event = await getEventById(eventId);
+
+  return {
+    props: {
+      selectedEvent: event,
+    },
+    revalidate: 30,
+  };
+}
+
+export async function getStaticPaths() {
+  //We need to get the list of all event IDs since it's a dynamic path
+  const events = await getFeaturedEvents();
+
+  const paths = events.map((event) => ({ params: { eventId: event.id } }));
+
+  return {
+    paths: paths,
+    fallback: "blocking", //set on false if it trys to load the page with an unknown id show 404 page
+  };
+}
 
 export default EventDetails;
